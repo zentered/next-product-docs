@@ -28,7 +28,7 @@ async function getRawFileFromGitHub(path) {
       Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
     }
   }
-  console.log(RAW_GITHUB_URL + path)
+
   const res = await fetch(RAW_GITHUB_URL + path, options)
   if (res.ok) return res.text()
   throw await getError(res, path)
