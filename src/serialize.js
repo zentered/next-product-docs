@@ -1,6 +1,6 @@
 import { serialize } from 'next-mdx-remote/serialize'
 import matter from 'gray-matter'
-import marked from 'marked'
+import { marked } from 'marked'
 import GithubSlugger from 'github-slugger'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolink from 'rehype-autolink-headings'
@@ -19,7 +19,7 @@ import {
   getPaths,
   fetchDocsManifest
 } from './lib/docs'
-import { getRawFileFromRepo } from './lib/github'
+import { getRawFile } from './lib/files'
 
 const DOCS_FOLDER = process.env.DOCS_FOLDER
 
@@ -31,16 +31,18 @@ export async function pageProps({ params }) {
   })
   const { slug } = getSlug(params)
   const route = manifest && findRouteByPath(slug, manifest.routes)
-  const manifestRoutes = cloneDeep(manifest.routes)
-  replaceDefaultPath(manifestRoutes)
-
   if (!route)
     return {
       notFound: true
     }
+  const manifestRoutes = cloneDeep(manifest.routes)
+  replaceDefaultPath(manifestRoutes)
 
-  const mdxRawContent = await getRawFileFromRepo(route.path)
+  const mdxRawContent = await getRawFile(route.path)
   const { content, data } = matter(mdxRawContent)
+  if (!data.title) {
+    data.title = ''
+  }
   const mdxSource = await serialize(content, {
     scope: { data },
     mdxOptions: {
@@ -106,7 +108,8 @@ export async function pageProps({ params }) {
       heading.slug = slugger.slug(heading.text)
       return heading
     })
-  const title = headings[0].text
+
+  const title = headings && headings.length > 0 ? headings[0].text : data.title
 
   return {
     title,

@@ -21,7 +21,7 @@ async function getError(res, path) {
   return error
 }
 
-export async function getRawFileFromGitHub(path) {
+async function getRawFileFromGitHub(path) {
   const options = {}
   if (process.env.GITHUB_TOKEN) {
     options.headers = {
@@ -33,9 +33,22 @@ export async function getRawFileFromGitHub(path) {
   throw await getError(res, path)
 }
 
-export function getRawFileFromRepo(path) {
+async function getRawFileFromFS(path) {
+  const { join } = await import('path')
+  const { readFileSync } = await import('fs')
+  const rootPath = process.env.DOCS_PATH ? process.env.DOCS_PATH : ''
+  const filePath = join(process.cwd(), rootPath, path)
+  return readFileSync(filePath, 'utf8')
+}
+
+export function getRawFile(path) {
   const org = process.env.DOCS_ORG
   const repo = process.env.DOCS_REPO
   const tag = process.env.DOCS_BRANCH
-  return getRawFileFromGitHub(`/${org}/${repo}/${tag}${path}`)
+  if (!org || !repo || !tag) {
+    // fetching from local filesystem instead
+    return getRawFileFromFS(path)
+  } else {
+    return getRawFileFromGitHub(`/${org}/${repo}/${tag}${path}`)
+  }
 }
