@@ -43,9 +43,6 @@
     ]
   },
   "lint-staged": {
-    "*.{jsx}": [
-      "stylelint"
-    ],
     "*.{js,json,jsx,md,mdx}": [
       "prettier --write"
     ],
@@ -102,8 +99,6 @@
     "react": "*",
     "react-dom": "*",
     "rollup": "^2.60.1",
-    "stylelint": "^14.1.0",
-    "stylelint-config-standard": "^24.0.0",
     "watch": "^1.0.2"
   },
   "peerDependencies": {
