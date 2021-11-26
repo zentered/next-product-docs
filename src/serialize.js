@@ -59,7 +59,7 @@ export async function pageProps({ params }) {
               type: 'element',
               tagName: 'svg',
               properties: {
-                className: ['h-6', 'w-6', 'ml-2', 'text-pink-600'],
+                className: ['h-6', 'w-6', 'ml-2', 'docs-copy-btn'],
                 xmlns: 'http://www.w3.org/2000/svg',
                 fill: 'none',
                 viewBox: '0 0 24 24',
