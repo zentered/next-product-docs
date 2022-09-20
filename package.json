@@ -1,6 +1,6 @@
 {
   "name": "@zentered/next-product-docs",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "React/Next.js Render Remote Content",
   "keywords": [
     "nextjs",
