@@ -37,6 +37,7 @@
     "prepare": "husky install",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable",
+    "preversion": "pnpm build",
     "style": "prettier --write \"./**/*.{js,jsx,json}\"",
     "test": "vitest",
     "coverage": "vitest run --coverage",
