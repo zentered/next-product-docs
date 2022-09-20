@@ -21,7 +21,10 @@ export function getSlug(params) {
 }
 
 export async function fetchDocsManifest(docsFolder) {
-  const path = `/${docsFolder}/manifest.json`
+  const path =
+    process.env.DOCS_SKIP_PATH_PREFIX === 'true'
+      ? '/manifest.json'
+      : `/${docsFolder}/manifest.json`
   const res = await getRawFile(path)
   return JSON.parse(res)
 }

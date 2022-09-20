@@ -16,7 +16,7 @@ async function getError(res, path) {
   )
 
   error.status = res.status
-  error.headers = res.headers.raw()
+  error.headers = res.headers
 
   return error
 }
@@ -29,6 +29,11 @@ async function getRawFileFromGitHub(path) {
     }
   }
 
+  if (process.env.DEBUG === true) {
+    console.log('github url')
+    console.log(RAW_GITHUB_URL + path)
+  }
+
   const res = await fetch(RAW_GITHUB_URL + path, options)
   if (res.ok) return res.text()
   throw await getError(res, path)
@@ -37,12 +42,18 @@ async function getRawFileFromGitHub(path) {
 async function getRawFileFromFS(path) {
   const { join } = await import('path')
   const { readFileSync } = await import('fs')
-  const rootPath = process.env.DOCS_PATH ? process.env.DOCS_PATH : 'content'
+  let rootPath = process.env.DOCS_PATH ? process.env.DOCS_PATH : 'content'
+  // if (process.env.DOCS_SKIP_PATH_PREFIX === true) {
+  //   rootPath = ''
+  // }
   const filePath = join(process.cwd(), rootPath, path)
   return readFileSync(filePath, 'utf8')
 }
 
 export function getRawFile(path) {
+  if (process.env.DEBUG === true) {
+    console.log(path)
+  }
   const org = process.env.DOCS_ORG
   const repo = process.env.DOCS_REPO
   const tag = process.env.DOCS_BRANCH

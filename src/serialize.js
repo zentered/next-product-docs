@@ -40,9 +40,11 @@ export async function pageProps({ params }) {
 
   const { slug } = getSlug(params)
 
-  const pathPrefix = process.env.DOCS_FOLDER
-    ? `/${process.env.DOCS_FOLDER}`
-    : ''
+  const pathPrefix =
+    process.env.DOCS_FOLDER && !process.env.DOCS_SKIP_PATH_PREFIX
+      ? `/${process.env.DOCS_FOLDER}`
+      : ''
+
   const route = manifest && findRouteByPath(pathPrefix + slug, manifest.routes)
   if (!route)
     return {
@@ -57,6 +59,7 @@ export async function pageProps({ params }) {
 
   const mdxRawContent = await getRawFile(route.path)
   const { content, data } = matter(mdxRawContent)
+
   if (!data.title) {
     data.title = ''
   }
@@ -166,7 +169,24 @@ export async function staticPaths(params) {
 
   const manifest = await fetchDocsManifest(docsFolder)
   const paths = getPaths(manifest.routes)
+  if (paths[0].length === 0) {
+    paths.shift()
+  }
+
   paths.shift() // remove trailing README
-  paths.unshift(`/${docsFolder}`)
-  return paths
+  if (process.env.DOCS_SKIP_PATH_PREFIX === 'true') {
+    paths.unshift('/')
+  } else {
+    paths.unshift(`/${docsFolder}`)
+  }
+
+  return paths.map((p) => {
+    const parts = p.split('/')
+    parts.shift()
+    return {
+      params: {
+        slug: parts
+      }
+    }
+  })
 }

@@ -88,6 +88,7 @@ DOCS_ORG=zentered
 DOCS_REPO=next-product-docs-example
 DOCS_BRANCH=main
 DOCS_FALLBACK=README
+DOCS_SKIP_PATH_PREFIX=false
 ASSETS_DESTINATION=/assets
 ```
 
@@ -101,6 +102,10 @@ DOCS_FOLDER=docs
 DOCS_FALLBACK=README
 ASSETS_DESTINATION=
 ```
+
+### Other options
+
+- `DOCS_USE_MDX`
 
 Create a new page `pages/docs/[[...slug]].jsx` which calls the provided
 `staticPaths` and `pageProps` functions:
@@ -147,9 +152,9 @@ export async function getStaticProps(ctx) {
     pnpm link .
 
     # in the website/next project folder
-    pnpm link @zentered/next-product-docs
+    pnpm link @zentered/next-product-docs ../next-product-docs
 
-    # for continous monitoring
+    # for continous monitoring in next-product-docs
     pnpm watch
 ```
 
