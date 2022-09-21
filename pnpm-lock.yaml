@@ -30,6 +30,7 @@ specifiers:
   lodash: ^4.17.21
   marked: ^4.1.0
   mdast: ^3.0.0
+  mdast-util-mdx: ^2.0.0
   mdx-observable: ^0.2.0
   next: ^12.3.0
   next-mdx-remote: ^4.1.0
@@ -48,10 +49,12 @@ specifiers:
   rehype-autolink-headings: ^6.1.1
   rehype-sanitize: ^5.0.1
   rehype-slug: ^5.0.1
+  remark-comment: ^1.0.0
   remark-external-links: ^9.0.1
   remark-gfm: ^3.0.1
   remark-heading-id: ^1.0.0
   remark-inline-links: ^6.0.1
+  remark-parse: ^10.0.1
   rollup: ^2.79.0
   strip-indent: ^4.0.0
   unist-util-visit: ^4.1.1
@@ -68,6 +71,7 @@ dependencies:
   lodash: 4.17.21
   marked: 4.1.0
   mdast: 3.0.0
+  mdast-util-mdx: 2.0.0
   next-mdx-remote: 4.1.0_biqbaboplfbrettd7655fr4n2y
   prism-react-renderer: 1.3.5_react@18.2.0
   react-click-away-listener: 2.2.2_biqbaboplfbrettd7655fr4n2y
@@ -78,10 +82,12 @@ dependencies:
   rehype-autolink-headings: 6.1.1
   rehype-sanitize: 5.0.1
   rehype-slug: 5.0.1
+  remark-comment: 1.0.0
   remark-external-links: 9.0.1
   remark-gfm: 3.0.1
   remark-heading-id: 1.0.0
   remark-inline-links: 6.0.1
+  remark-parse: 10.0.1
   strip-indent: 4.0.0
   unist-util-visit: 4.1.1
   vfile: 5.3.5
@@ -6407,6 +6413,14 @@ packages:
       hast-util-to-string: 2.0.0
       unified: 10.1.2
       unist-util-visit: 4.1.1
+    dev: false
+
+  /remark-comment/1.0.0:
+    resolution: {integrity: sha512-k8YPo5MGvl8l4gGxOH6Zk4Fa2AhDACN5eqKnKZcHDORZQS15hlnezlBHj2lqyDiqzApNmYOMTibkEJbMSKU25w==}
+    dependencies:
+      micromark-factory-space: 1.0.0
+      micromark-util-character: 1.1.0
+      micromark-util-symbol: 1.0.1
     dev: false
 
   /remark-external-links/9.0.1:

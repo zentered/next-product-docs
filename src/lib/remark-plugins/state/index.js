@@ -1,17 +1,35 @@
+import getStateNode from './utils/getStateNode'
+
+const COMMENT_LABEL = 'export-to-input'
+
+const isClosingComment = (child) => {
+  return (
+    child.type === 'comment' &&
+    child.commentValue.trim().includes(`/${COMMENT_LABEL}`)
+  )
+}
+
+const isOpeningComment = (child) => {
+  return (
+    child.type === 'comment' &&
+    child.commentValue.trim().includes(COMMENT_LABEL)
+  )
+}
+
 function findVarsToSub(children) {
   const varsToSub = []
 
   const updatedChildren = children.reduce((arr, child) => {
-    const isClosingInputComment =
-      child.type === 'comment' &&
-      child.value.trim().includes('/export-to-input')
+    console.log(child)
+    if (child.name === 'State') {
+      // console.log(JSON.stringify(child, null, 2))
+    }
+    const isClosingInputComment = isClosingComment(child)
 
     if (isClosingInputComment) {
       // find opening comment
       const numberOfElementsToRemove = [...arr].reverse().findIndex((c) => {
-        return (
-          c.type === 'comment' && c.value.trim().includes('export-to-input')
-        )
+        return isOpeningComment(c)
       })
 
       const arrWithoutComment = arr.slice(0, -numberOfElementsToRemove)
@@ -53,49 +71,49 @@ function findVarsToSub(children) {
 export default function remarkState() {
   return ({ children }) => {
     const varsToSub = findVarsToSub(children)
-    const varsToSubWithDefaultValue = varsToSub.map((vts) => `"${vts}": ""`)
-    const substitutionState = `
-      {
-        ${varsToSubWithDefaultValue.join(', ')}
-      }
-    `
+    
 
-    children.unshift(
-      {
-        type: 'jsx',
-        value: `<State initialstate={${substitutionState}}>`
-      },
-      {
-        type: 'jsx',
-        value: `{({setState: setSubstitutionState, ...substitutionState}) => (`
-      },
-      {
-        type: 'jsx',
-        value: `<>`
-      },
-      {
-        type: 'jsx',
-        value: `<Interpolate substitutions={substitutionState}>`
-      }
-    )
+    
+    children.splice(0, children.length, getStateNode(varsToSub, children))
 
-    children.push(
-      {
-        type: 'jsx',
-        value: '</Interpolate>'
-      },
-      {
-        type: 'jsx',
-        value: '</>'
-      },
-      {
-        type: 'jsx',
-        value: ')}'
-      },
-      {
-        type: 'jsx',
-        value: `</State>`
-      }
-    )
+    // children.unshift(
+    //   test
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: `<State initialstate={${substitutionState}}>`
+    //   // },
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: `{({setState: setSubstitutionState, ...substitutionState}) => (`
+    //   // },
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: `<>`
+    //   // },
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: `<Interpolate substitutions={substitutionState}>`
+    //   // }
+    // )
+
+    // children
+    //   .push
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: '</Interpolate>'
+    //   // },
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: '</>'
+    //   // },
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: ')}'
+    //   // },
+    //   // {
+    //   //   type: 'jsx',
+    //   //   value: `</State>`
+    //   // }
+    //   ()
   }
 }
