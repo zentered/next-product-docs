@@ -1,9 +1,6 @@
 import { getRawFile } from './files'
 
-const DOCS_FALLBACK = process.env.DOCS_FALLBACK
-  ? process.env.DOCS_FALLBACK
-  : 'README'
-const DOCS_EXTENSION = process.env.DOCS_USE_MDX === 'true' ? '.mdx' : '.md'
+const DOCS_FALLBACK = 'README'
 
 function getDocsSlug(slug) {
   return slug?.length ? slug : [DOCS_FALLBACK]
@@ -20,54 +17,70 @@ export function getSlug(params) {
   return { slug: `/${slug.join('/')}` }
 }
 
-export async function fetchDocsManifest(docsFolder) {
+export async function fetchDocsManifest(docsFolder, options) {
+  const { skipPathPrefix } = options
   const path =
-    process.env.DOCS_SKIP_PATH_PREFIX === 'true'
-      ? '/manifest.json'
-      : `/${docsFolder}/manifest.json`
-  const res = await getRawFile(path)
+    skipPathPrefix === true ? '/manifest.json' : `/${docsFolder}/manifest.json`
+  const res = await getRawFile(path, options)
   return JSON.parse(res)
 }
 
-export function findRouteByPath(path, routes) {
+export function findRouteByPath(path, routes, options) {
+  const extension = options.useMDX ? '.mdx' : '.md'
   for (const route of routes) {
-    if (route.path && removeFromLast(route.path, DOCS_EXTENSION) === path) {
+    if (
+      route.path &&
+      `/${options.docsFolder}${removeFromLast(route.path, extension)}` === path
+    ) {
+      return route
+    } else if (route.path && removeFromLast(route.path, extension) === path) {
       return route
     } else if (
       route.path &&
-      removeFromLast(route.path, DOCS_EXTENSION).replace(
-        `/${DOCS_FALLBACK}`,
-        ''
-      ) === path
+      removeFromLast(route.path, extension).replace(`/${DOCS_FALLBACK}`, '') ===
+        path
     ) {
       return route
     }
-    const childPath = route.routes && findRouteByPath(path, route.routes)
-    if (childPath) return childPath
+
+    const childPath =
+      route.routes && findRouteByPath(path, route.routes, options)
+    if (childPath) {
+      // check if the routes in the manifest start with the docsFolder
+      if (!childPath.path.startsWith(options.docsFolder)) {
+        childPath.path = `${options.docsFolder}${childPath.path}`
+      }
+      return childPath
+    }
   }
 }
 
-export function getPaths(nextRoutes, carry = []) {
+export function getPaths(nextRoutes, options, carry = []) {
+  const extension = options.useMDX ? '.mdx' : '.md'
   nextRoutes.forEach(({ path, routes }) => {
     if (path) {
       if (path.indexOf(DOCS_FALLBACK) > -1) {
         carry.push(
-          removeFromLast(path, DOCS_EXTENSION).replace(`/${DOCS_FALLBACK}`, '')
+          removeFromLast(path, extension).replace(`/${DOCS_FALLBACK}`, '')
         )
       }
-      carry.push(removeFromLast(path, DOCS_EXTENSION))
+      carry.push(removeFromLast(path, extension))
     } else if (routes) {
-      getPaths(routes, carry)
+      getPaths(routes, options, carry)
     }
   })
 
   return carry
 }
 
-export function replaceDefaultPath(routes) {
+export function replaceDefaultPath(routes, options) {
+  const extension = options.useMDX ? '.mdx' : '.md'
   for (const route of routes) {
     if (route.path) {
-      route.path = route.path.split(DOCS_EXTENSION)[0]
+      if (options.docsFolder && !route.path.startsWith(options.docsFolder)) {
+        route.path = `/${options.docsFolder}/${route.path}`
+      }
+      route.path = route.path.split(extension)[0]
       if (route.path.indexOf(DOCS_FALLBACK) > -1) {
         route.path = route.path.replace(DOCS_FALLBACK, '')
         // remove trailing slash
@@ -77,7 +90,7 @@ export function replaceDefaultPath(routes) {
       }
     }
     if (route.routes) {
-      replaceDefaultPath(route.routes)
+      replaceDefaultPath(route.routes, options)
     }
   }
 }

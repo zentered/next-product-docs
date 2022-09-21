@@ -26,26 +26,36 @@ import {
 } from './lib/docs'
 import { getRawFile } from './lib/files'
 
-export async function pageProps({ params }) {
-  const docsFolder = params.docsFolder
-    ? params.docsFolder
-    : process.env.DOCS_FOLDER
-  const trailingSlash = params.trailingSlash || false
+const defaults = {
+  docsFolder: 'docs',
+  rootPath: 'content',
+  skipPathPrefix: false,
+  trailingSlash: false,
+  useMDX: false,
+  org: null,
+  repo: null,
+  tag: null,
+  assetsDestination: null,
+  debug: process.env.DEBUG === true
+}
+
+export async function pageProps(context, args) {
+  const options = { ...args, ...defaults }
+  const params = context.params
+  const { docsFolder, trailingSlash, skipPathPrefix, useMDX } = options
 
   const slugger = new GithubSlugger()
-  const manifest = await fetchDocsManifest(docsFolder).catch((error) => {
-    if (error.status === 404) return
-    throw error
-  })
+  const manifest = await fetchDocsManifest(docsFolder, options).catch(
+    (error) => {
+      if (error.status === 404) return
+      throw error
+    }
+  )
 
   const { slug } = getSlug(params)
-
-  const pathPrefix =
-    process.env.DOCS_FOLDER && !process.env.DOCS_SKIP_PATH_PREFIX
-      ? `/${process.env.DOCS_FOLDER}`
-      : ''
-
-  const route = manifest && findRouteByPath(pathPrefix + slug, manifest.routes)
+  const pathPrefix = docsFolder && !skipPathPrefix ? `/${docsFolder}` : ''
+  const route =
+    manifest && findRouteByPath(pathPrefix + slug, manifest.routes, options)
   if (!route)
     return {
       notFound: true
@@ -55,9 +65,9 @@ export async function pageProps({ params }) {
       ? params.slug?.concat(['README'])
       : params.slug
   const manifestRoutes = cloneDeep(manifest.routes)
-  replaceDefaultPath(manifestRoutes)
+  replaceDefaultPath(manifestRoutes, options)
 
-  const mdxRawContent = await getRawFile(route.path)
+  const mdxRawContent = await getRawFile(route.path, options)
   const { content, data } = matter(mdxRawContent)
 
   if (!data.title) {
@@ -72,7 +82,7 @@ export async function pageProps({ params }) {
   const mdxSource = await serialize(content, {
     parseFrontmatter: false,
     scope: { data },
-    format: process.env.DOCS_USE_MDX === 'true' ? 'mdx' : 'md',
+    format: useMDX === 'true' ? 'mdx' : 'md',
     mdxOptions: {
       rehypePlugins: [
         rehypeSlug,
@@ -119,11 +129,11 @@ export async function pageProps({ params }) {
         [
           remarkCodeImport,
           {
-            disabled: process.env.DOCS_REPO ? true : false, // only works with local filesystem, not remote fetch
+            disabled: options.repop ? true : false, // only works with local filesystem, not remote fetch
             importBasePath: importBasePath
           }
         ],
-        [remarkRewriteImages, { destination: process.env.ASSETS_DESTINATION }],
+        [remarkRewriteImages, { destination: options.assetsDestination }],
         remarkInlineLinks,
         [remarkExternalLinks, { target: false, rel: ['nofollow'] }],
         [
@@ -162,22 +172,17 @@ export async function pageProps({ params }) {
   }
 }
 
-export async function staticPaths(params) {
-  const docsFolder = params?.docsFolder
-    ? params.docsFolder
-    : process.env.DOCS_FOLDER
+export async function staticPaths(args) {
+  const options = { ...args, ...defaults }
+  const { docsFolder, skipPathPrefix } = options
 
-  const manifest = await fetchDocsManifest(docsFolder)
-  const paths = getPaths(manifest.routes)
-  if (paths[0].length === 0) {
-    paths.shift()
-  }
+  const manifest = await fetchDocsManifest(docsFolder, options)
+  const paths = getPaths(manifest.routes, options).filter(
+    (p) => !p.includes('README')
+  )
 
-  paths.shift() // remove trailing README
-  if (process.env.DOCS_SKIP_PATH_PREFIX === 'true') {
+  if (skipPathPrefix) {
     paths.unshift('/')
-  } else {
-    paths.unshift(`/${docsFolder}`)
   }
 
   return paths.map((p) => {
@@ -185,7 +190,7 @@ export async function staticPaths(params) {
     parts.shift()
     return {
       params: {
-        slug: parts
+        slug: parts.length > 0 ? parts : null
       }
     }
   })

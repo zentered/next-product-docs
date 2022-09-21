@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/opstrace-docs.png">
+  <img src=".github/assets/opstrace-docs.png">
 </p>
 
 <p align="center">

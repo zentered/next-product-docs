@@ -21,15 +21,14 @@ async function getError(res, path) {
   return error
 }
 
-async function getRawFileFromGitHub(path) {
-  const options = {}
+async function getRawFileFromGitHub(path, options) {
   if (process.env.GITHUB_TOKEN) {
     options.headers = {
       Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
     }
   }
 
-  if (process.env.DEBUG === true) {
+  if (options.debug) {
     console.log('github url')
     console.log(RAW_GITHUB_URL + path)
   }
@@ -39,28 +38,24 @@ async function getRawFileFromGitHub(path) {
   throw await getError(res, path)
 }
 
-async function getRawFileFromFS(path) {
+async function getRawFileFromFS(path, options) {
+  const { rootPath } = options
   const { join } = await import('path')
   const { readFileSync } = await import('fs')
-  let rootPath = process.env.DOCS_PATH ? process.env.DOCS_PATH : 'content'
-  // if (process.env.DOCS_SKIP_PATH_PREFIX === true) {
-  //   rootPath = ''
-  // }
+
   const filePath = join(process.cwd(), rootPath, path)
   return readFileSync(filePath, 'utf8')
 }
 
-export function getRawFile(path) {
-  if (process.env.DEBUG === true) {
+export function getRawFile(path, options) {
+  if (options.debug) {
     console.log(path)
   }
-  const org = process.env.DOCS_ORG
-  const repo = process.env.DOCS_REPO
-  const tag = process.env.DOCS_BRANCH
+  const { org, repo, tag } = options
   if (!org || !repo || !tag) {
     // fetching from local filesystem instead
-    return getRawFileFromFS(path)
+    return getRawFileFromFS(path, options)
   } else {
-    return getRawFileFromGitHub(`/${org}/${repo}/${tag}${path}`)
+    return getRawFileFromGitHub(`/${org}/${repo}/${tag}${path}`, options)
   }
 }
