@@ -1,8 +1,11 @@
 import React from 'react'
 import remarkSection from '../../src/lib/remark-plugins/sections/index'
 import { render } from '@testing-library/react'
-import MDX from '@mdx-js/runtime'
 import { describe, it, expect } from 'vitest'
+import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote } from 'next-mdx-remote'
+import remarkParse from 'remark-parse'
+import remarkComment from 'remark-comment'
 
 describe('remarkState', () => {
   it('adds sections - html', async () => {
@@ -20,30 +23,38 @@ more sub 22 text
 eeehoo
 
 ## Second subthing after first main thing
-more sub text
+more sub text 2
 
 # Leftover
-more sub text
+more sub text 3
 `
-
+    const mdxSource = await serialize(markdown, {
+      format: 'mdx',
+      mdxOptions: {
+        remarkPlugins: [
+          remarkSection,
+          remarkParse,
+          [remarkComment, { ast: true }]
+        ]
+      }
+    })
     const testComponent = render(
-      <MDX
+      <MDXRemote
+        {...mdxSource}
         components={{
           Element: ({ name, ...props }) => {
             return (
               <div
                 // remove name from parent div
-                name={props.children[0]?.props?.id === name ? null : name}
+                name={props.children?.[0]?.props?.id === name ? null : name}
                 {...props}
               />
             )
           }
         }}
-        remarkPlugins={[remarkSection]}
-      >
-        {markdown}
-      </MDX>
+      />
     )
+
     expect(testComponent.container).toMatchInlineSnapshot(`
       <div>
         <div
@@ -76,6 +87,8 @@ more sub text
             </p>
           </div>
         </div>
+        
+
         <div
           name="another-main-thing"
         >
@@ -92,10 +105,12 @@ more sub text
               Second subthing after first main thing
             </h2>
             <p>
-              more sub text
+              more sub text 2
             </p>
           </div>
         </div>
+        
+
         <div
           name="leftover"
         >
@@ -103,7 +118,7 @@ more sub text
             Leftover
           </h1>
           <p>
-            more sub text
+            more sub text 3
           </p>
         </div>
       </div>
