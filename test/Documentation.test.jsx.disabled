@@ -4,6 +4,9 @@ import { pageProps } from '../src/serialize'
 import nock from 'nock'
 import { describe, it, expect, beforeEach } from 'vitest'
 import 'whatwg-fetch'
+import { afterAll } from 'vitest'
+
+const { ...originalEnv } = process.env
 
 beforeEach(async () => {
   const docOneFixture = `
@@ -53,6 +56,10 @@ beforeEach(async () => {
     .get(`/${process.env.DOCS_FOLDER}/one.md`)
     .reply(200, docOneFixture)
     .persist()
+})
+
+afterAll(async () => {
+  process.env = originalEnv
 })
 
 describe('Document', () => {
