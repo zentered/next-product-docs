@@ -2,7 +2,7 @@
 import React from 'react'
 import { MDXRemote } from 'next-mdx-remote'
 // import { State, Observe } from 'mdx-observable'
-// import Tabs, { Tab } from './components/Tabs.jsx'
+import Tabs, { Tab } from './components/Tabs.jsx'
 // import Interpolate from './components/Interpolate.jsx'
 import CodeBlock from './components/CodeBlock.jsx'
 import InlineCode from './components/InlineCode.jsx'
@@ -20,7 +20,9 @@ export function Documentation({ source, theme, additionalComponents = {} }) {
         )
       },
       pre: (props) => <CodeBlock {...props} theme={theme} />,
-      code: (props) => <InlineCode {...props} theme={theme} />
+      code: (props) => <InlineCode {...props} theme={theme} />,
+      Tabs,
+      Tab
     },
     additionalComponents
   )
