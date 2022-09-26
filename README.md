@@ -11,10 +11,13 @@
 # Next.js Component for Product Docs
 
 This component helps you to render your product documentation (`/docs`) on your
-product website.
-[Check out the Opstrace Docs for a full impression](https://opstrace.com/docs)
-what this component does. Typically the website and product (docs) are in
-separate repositories. This library offers three key functions:
+product website. Check out these docs to see a full impression what this
+component does.
+
+- [Cert Manager Docs][https://cert-manager.io/docs/]
+
+Typically the website and product (docs) are in separate repositories. This
+library offers three key functions:
 
 1. `staticPaths` returns all available paths for static site generation in
    next.js
@@ -23,7 +26,7 @@ separate repositories. This library offers three key functions:
 3. `Documentation` is a JSX function that contains the render function
 
 You can read more about the whys and hows of this component in the
-[Opstrace Blog](http://opstrace.com/blog/product-documentation-with-nextjs)
+[Zentered Blog](https://zentered.co/articles/product-documentation-with-nextjs/)
 
 ## Prerequisites
 
@@ -62,7 +65,7 @@ Manifest:
 You can find
 [complete example here](https://github.com/zentered/next-product-docs-example/blob/main/docs/manifest.json)
 or check out the
-[Opstrace Documentation Manifest](https://github.com/opstrace/opstrace/blob/main/docs/manifest.json).
+[Example Documentation Manifest](https://github.com/zentered/next-product-docs-example/blob/main/content/mdx/manifest.json).
 
 ## Installation & Usage
 
@@ -70,49 +73,69 @@ In your Next.js website repo, run:
 
     npm install @zentered/next-product-docs
 
-The location of your product docs can be configured through environment
-variables in your `.env` file. There are two possible ways to retrieve docs:
+The location of your product docs can be configured through JSX properties. If
+you want to access `docs` on a private repository, you'll need to provide a
+`GITHUB_TOKEN` environment variable.
 
-### Retrieve docs from GitHub Repo
+There are two possible ways to retrieve docs:
 
-ie. `github.com/zentered/next-product-docs-example/main`
+### Documentation in the same repository as the website
 
-```
-GITHUB_TOKEN=
-DOCS_FOLDER=docs
-DOCS_ORG=zentered
-DOCS_REPO=next-product-docs-example
-DOCS_BRANCH=main
-DOCS_FALLBACK=README
-DOCS_SKIP_PATH_PREFIX=false
-ASSETS_DESTINATION=/assets
-```
+[In this example](https://github.com/zentered/next-product-docs-example/blob/main/pages/local/%5B%5B...slug%5D%5D.jsx),
+the documentation content is stored in `content/docs/`:
 
-### Retrieve docs from local docs folder
-
-ie. `./content/docs`:
-
-```
-DOCS_PATH=content
-DOCS_FOLDER=docs
-DOCS_FALLBACK=README
-ASSETS_DESTINATION=
+```jsx
+const defaults = {
+  docsFolder: 'docs',
+  rootPath: 'content'
+}
 ```
 
-### Other options
+### Documentation in a remote repository
 
-- `DOCS_USE_MDX`
+[Another example](https://github.com/zentered/next-product-docs-example/blob/main/pages/remote/%5B%5B...slug%5D%5D.jsx)
+where documentation content is stored at
+`@zentered/next-product-docs-example/content/docs/`:
 
-Create a new page `pages/docs/[[...slug]].jsx` which calls the provided
-`staticPaths` and `pageProps` functions:
-
+```jsx
+  org: 'zentered,
+  repo: 'next-product-docs-example',
+  tag: 'main',
+  docsFolder: 'docs',
+  rootPath: 'content'
 ```
+
+### Additional options
+
+```jsx
+skipPathPrefix: false
+```
+
+Can be used if the docs are not located in the root of the repository.
+
+```jsx
+  useMDX: true,
+```
+
+Switch from Markdown to MDX.
+
+```jsx
+  trailingSlash: false, // add a trailing slash to all pages
+  assetsDestination: null, // use a CDN for assets
+  debug: process.env.DEBUG === true
+```
+
+### Full Example "[[...slug.jsx]]
+
+```jsx
 import Head from 'next/head'
-import {
-  pageProps,
-  staticPaths
-} from 'next-product-docs/serialize'
+import { pageProps, staticPaths } from 'next-product-docs/serialize'
 import Documentation from 'next-product-docs'
+
+const docsOptions = {
+  docsFolder: 'docs',
+  rootPath: 'content'
+}
 
 export default function Docs({ title, source }) {
   return (
@@ -123,16 +146,13 @@ export default function Docs({ title, source }) {
 }
 
 export async function getStaticPaths() {
-  const paths = await staticPaths()
+  const paths = await staticPaths(docsOptions)
   return { paths, fallback: false }
 }
 
 export async function getStaticProps(ctx) {
-  return {
-    props: {
-      ...(await pageProps(ctx))
-    }
-  }
+  const props = await pageProps(ctx, docOptions)
+  return { props }
 }
 ```
 
@@ -187,19 +207,15 @@ further information.
 Considering contributing to next-product-docs? We'd love to work with you!
 
 To start a local development environment, have a look at our
-[example repo](https://github.com/zentered/next-product-docs-example/blob/main/package.json#L20)
-on how to link/unlink the component in a Next.js project.
+[example repo](https://github.com/zentered/next-product-docs-example) on how to
+link/unlink the component in a Next.js project.
 
-Please join us for
-[discussions in our community](https://go.opstrace.com/community).
+You can also ping us on Twitter [@zenteredco](http://twitter.com/zenteredco).
+The only workaround we have at the moment is forking the repository, publish new
+package versions to GitHub and install them in the Next.js project where we use
+the component.
 
-You can also ping us on Twitter [@zentered](http://twitter.com/opstrace) or
-[@zenteredco](http://twitter.com/zenteredco). The only workaround we have at the
-moment is forking the repository, publish new package versions to GitHub and
-install them in the Next.js project where we use the component.
-
-Please adhere to the Opstrace
-[code of conduct](https://github.com/opstrace/opstrace/blob/main/CODE_OF_CONDUCT.md).
+Please adhere to the [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Acknowledgements & Thanks
 
