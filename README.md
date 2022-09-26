@@ -70,10 +70,6 @@ In your Next.js website repo, run:
 
     npm install @zentered/next-product-docs
 
-or
-
-    yarn add @zentered/next-product-docs
-
 The location of your product docs can be configured through environment
 variables in your `.env` file. There are two possible ways to retrieve docs:
 
