@@ -48,7 +48,7 @@ export function findRouteByPath(path, routes, options) {
     if (childPath) {
       // check if the routes in the manifest start with the docsFolder
       if (!childPath.path.startsWith(options.docsFolder)) {
-        childPath.path = `${options.docsFolder}${childPath.path}`
+        childPath.path = `/${options.docsFolder}${childPath.path}`
       }
       return childPath
     }

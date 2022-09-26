@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`Document > should render 1`] = `
+exports[`Document > should render remote docs 1`] = `
 <div>
   <hr />
   

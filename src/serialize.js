@@ -40,7 +40,7 @@ const defaults = {
 }
 
 export async function pageProps(context, args) {
-  const options = { ...args, ...defaults }
+  const options = { ...defaults, ...args }
   const params = context.params
   const { docsFolder, trailingSlash, skipPathPrefix, useMDX } = options
 
@@ -129,7 +129,7 @@ export async function pageProps(context, args) {
         [
           remarkCodeImport,
           {
-            disabled: options.repop ? true : false, // only works with local filesystem, not remote fetch
+            disabled: options.repo ? true : false, // only works with local filesystem, not remote fetch
             importBasePath: importBasePath
           }
         ],

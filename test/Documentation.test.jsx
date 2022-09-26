@@ -5,6 +5,11 @@ import nock from 'nock'
 import { describe, it, expect, beforeEach } from 'vitest'
 import 'whatwg-fetch'
 
+const ORG = 'DOCS_ORG'
+const REPO = 'DOCS_REPO'
+const TAG = 'DOCS_BRANCH'
+const DOCS_FOLDER = 'DOCS_FOLDER'
+
 beforeEach(async () => {
   const docOneFixture = `
   ---
@@ -22,20 +27,13 @@ beforeEach(async () => {
   Second Paragraph.
   `
 
-  process.env.DOCS_ORG = 'DOCS_ORG'
-  process.env.DOCS_REPO = 'DOCS_REPO'
-  process.env.DOCS_BRANCH = 'DOCS_BRANCH'
-  process.env.DOCS_FOLDER = 'DOCS_FOLDER'
-
   // mock github response
-  nock(
-    `https://raw.githubusercontent.com/${process.env.DOCS_ORG}/${process.env.DOCS_REPO}/${process.env.DOCS_BRANCH}`
-  )
+  nock(`https://raw.githubusercontent.com/${ORG}/${REPO}/${TAG}`)
     .defaultReplyHeaders({
       'access-control-allow-origin': '*',
       'access-control-allow-credentials': 'true'
     })
-    .get(`/${process.env.DOCS_FOLDER}/manifest.json`)
+    .get(`/${DOCS_FOLDER}/manifest.json`)
     .reply(200, {
       routes: [
         {
@@ -44,20 +42,30 @@ beforeEach(async () => {
           routes: [
             {
               title: 'Docs One',
-              path: `/${process.env.DOCS_FOLDER}/one.md`
+              path: `/one.md`
             }
           ]
         }
       ]
     })
-    .get(`/${process.env.DOCS_FOLDER}/one.md`)
+    .get(`/${DOCS_FOLDER}/one.md`)
     .reply(200, docOneFixture)
     .persist()
 })
 
 describe('Document', () => {
-  it('should render', async () => {
-    const { source } = await pageProps({ params: { slug: ['one'] } })
+  it('should render remote docs', async () => {
+    const { source } = await pageProps(
+      {
+        params: { slug: ['one'] }
+      },
+      {
+        org: ORG,
+        repo: REPO,
+        tag: TAG,
+        docsFolder: DOCS_FOLDER
+      }
+    )
     const { container } = render(<Documentation source={source} />)
     expect(container).toMatchSnapshot()
   })
