@@ -1,33 +1,5 @@
 const TAB_TYPE = 'heading'
 
-function renderTabs(tabs, nodes) {
-  return [
-    {
-      type: 'jsx',
-      value: `<Tabs>`
-    },
-    ...tabs.flatMap((tab) => {
-      const label = nodes[tab.start].children[0].value
-      const tabContent = nodes.slice(tab.start + 1, tab.end)
-      return [
-        {
-          type: 'jsx',
-          value: `<Tab label="${label}">`
-        },
-        ...tabContent,
-        {
-          type: 'jsx',
-          value: `</Tab>`
-        }
-      ]
-    }),
-    {
-      type: 'jsx',
-      value: `</Tabs>`
-    }
-  ]
-}
-
 function findTabs(children, offset) {
   // E.g. `## Heading` vs `### Heading`
   const depthOfTabHeadings = children.find((c) => c.type === TAB_TYPE).depth
@@ -55,14 +27,32 @@ function findTabs(children, offset) {
   }, [])
 }
 
+const getCommentValue = (child) => child.commentValue ?? child.value
+
+const isOpeningComment = (child) => {
+  if (child.type !== 'comment') {
+    return false
+  }
+
+  return !isClosingComment(child) && getCommentValue(child).includes('tabs')
+}
+
+const isClosingComment = (child) => {
+  if (child.type !== 'comment') {
+    return false
+  }
+
+  return getCommentValue(child).includes('/tabs')
+}
+
 export default function remarkTabs() {
   return ({ children }) => {
     for (let index = 0; index < children.length; index++) {
       const child = children[index]
-      if (child.type === 'comment' && child.value.trim() === 'tabs') {
+      if (isOpeningComment(child)) {
         const relevantChildren = children.slice(index)
-        const closingCommentIndex = relevantChildren.findIndex(
-          (child) => child.type === 'comment' && child.value.trim() === '/tabs'
+        const closingCommentIndex = relevantChildren.findIndex((c) =>
+          isClosingComment(c, true)
         )
         const tabs = findTabs(
           relevantChildren.slice(0, closingCommentIndex),
@@ -72,9 +62,32 @@ export default function remarkTabs() {
         if (tabs.length > 0) {
           const { start } = tabs[0]
           const { end } = tabs[tabs.length - 1]
-          const nodes = renderTabs(tabs, children)
-          children.splice(start, end - start, ...nodes)
-          index += nodes.length
+          children.splice(start, end - start, {
+            type: 'mdxJsxFlowElement',
+            name: 'Tabs',
+            children: tabs.flatMap((tab) => {
+              const label = children[tab.start].children[0].value
+              const tabChildren = children.slice(tab.start + 1, tab.end)
+              return {
+                type: 'mdxJsxFlowElement',
+                name: 'Tab',
+                attributes: [
+                  {
+                    type: 'mdxJsxAttribute',
+                    name: 'label',
+                    value: label
+                  }
+                ],
+                children: tabChildren,
+                data: {
+                  _mdxExplicitJsx: true
+                }
+              }
+            }),
+            data: {
+              _mdxExplicitJsx: true
+            }
+          })
         }
       }
     }
