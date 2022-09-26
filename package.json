@@ -39,7 +39,7 @@
     "postpublish": "pinst --enable",
     "preversion": "pnpm build",
     "style": "prettier --write \"./**/*.{js,jsx,json}\"",
-    "test": "vitest",
+    "test": "vitest run",
     "coverage": "vitest run --coverage",
     "watch": "watch 'npm run build' ./src"
   },
