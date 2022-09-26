@@ -16,15 +16,15 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2.1.4
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://npm.pkg.github.com/
-          scope: '@opstrace'
+          scope: '@zentered'
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
       - name: Lint Code Base
-        run: yarn lint
+        run: pnpm lint
 
       - name: Test
-        run: yarn test
+        run: pnpm test

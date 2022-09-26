@@ -35,7 +35,9 @@ const DesktopTabs = ({ className, options, value, onChange }) => (
             <span
               key={opt}
               className={`cursor-pointer whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${extraClasses}`}
-              onClick={() => onChange(opt)}
+              onClick={() => {
+                onChange(opt)
+              }}
             >
               {opt}
             </span>
@@ -57,13 +59,13 @@ export default function Tabs({ children }) {
           className="sm:hidden"
           value={selected}
           options={labels}
-          onChange={(label) => setSelected(label)}
+          onChange={(evt) => setSelected(evt.target.value)}
         />
         <DesktopTabs
           className="hidden sm:block"
           value={selected}
           options={labels}
-          onChange={(label) => setSelected(label)}
+          onChange={(evt) => setSelected(evt.target.value)}
         />
       </div>
       {childArray.find((child) => child.props.label === selected)}
