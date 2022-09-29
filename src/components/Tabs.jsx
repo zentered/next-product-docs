@@ -10,7 +10,7 @@ const MobileTabs = ({ className, options, value, onChange }) => (
       value={value}
       onChange={onChange}
       id="tabs"
-      className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+      className="docs-tabs-mobile-select"
     >
       {options.map((opt) => (
         <option key={opt}>{opt}</option>
@@ -35,7 +35,9 @@ const DesktopTabs = ({ className, options, value, onChange }) => (
             <span
               key={opt}
               className={`cursor-pointer whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${extraClasses}`}
-              onClick={() => onChange(opt)}
+              onClick={() => {
+                onChange(opt)
+              }}
             >
               {opt}
             </span>
@@ -57,13 +59,13 @@ export default function Tabs({ children }) {
           className="sm:hidden"
           value={selected}
           options={labels}
-          onChange={(label) => setSelected(label)}
+          onChange={(evt) => setSelected(evt.target.value)}
         />
         <DesktopTabs
           className="hidden sm:block"
           value={selected}
           options={labels}
-          onChange={(label) => setSelected(label)}
+          onChange={(evt) => setSelected(evt.target.value)}
         />
       </div>
       {childArray.find((child) => child.props.label === selected)}

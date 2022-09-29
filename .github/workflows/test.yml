@@ -11,28 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2.2.2
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2.1.4
+          version: 'latest'
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
-          registry-url: https://npm.pkg.github.com/
-          scope: '@opstrace'
-
+          node-version: 16
+          cache: 'pnpm'
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
       - name: Lint Code Base
-        uses: github/super-linter@v3.17.1
-        env:
-          LINTER_RULES_PATH: /
-          LOG_LEVEL: 'WARN'
-          JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
-          VALIDATE_JAVASCRIPT_STANDARD: false
-          FILTER_REGEX_EXCLUDE: .*husky.*|README.md
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm lint
 
-      - name: Test
-        run: yarn test
+      # - name: Test
+      #   run: pnpm test

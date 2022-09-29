@@ -10,20 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v2.1.4
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2.2.2
         with:
-          node-version: 14
-
+          version: 'latest'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'pnpm'
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
-      - name: Test
-        run: yarn test
+      # - name: Test
+      #   run: pnpm test
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       - name: Semantic Release
         run: npx semantic-release

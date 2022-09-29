@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react'
 import remarkState from '../../src/lib/remark-plugins/state/index.js'
 import { render } from '@testing-library/react'
@@ -9,6 +5,7 @@ import { State, Observe } from 'mdx-observable'
 import Interpolate from '../../src/components/Interpolate'
 import userEvent from '@testing-library/user-event'
 import MDX from '@mdx-js/runtime'
+import { describe, it, expect } from 'vitest'
 
 const markdown = `
 <!--export-to-input-->

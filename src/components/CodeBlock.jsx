@@ -1,12 +1,13 @@
 import React from 'react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import github from '../lib/github-prism-theme.js'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import pkg from 'react-copy-to-clipboard'
+const { CopyToClipboard } = pkg
 import { useState } from 'react'
 
 const copyIcon = (
   <svg
-    className="text-opstrace-600 h-6 w-6"
+    className="docs-codeblock-copy-icon"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
     fill="currentColor"
@@ -17,7 +18,7 @@ const copyIcon = (
 )
 const doneIcon = (
   <svg
-    className="text-opstrace-600 h-6 w-6"
+    className="docs-codeblock-done-icon"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
     fill="currentColor"
@@ -31,26 +32,24 @@ const doneIcon = (
   </svg>
 )
 
-export default function CodeBlock({ children, className = '', theme = github }) {
+export default function CodeBlock({ children, theme = github }) {
+  const className = children.props.className || ''
   const [copied, setCopied] = useState(copyIcon)
   const language = className.replace(/language-/, '')
+  const code = children.props.children.trim()
+
   return (
     <div className="relative">
       <Highlight
         {...defaultProps}
         theme={theme}
-        code={children.trim()}
+        code={code}
         language={language}
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <>
-            <CopyToClipboard
-              text={children.trim()}
-              onCopy={() => setCopied(doneIcon)}
-            >
-              <button className="absolute top-3 -right-8 text-opstrace-600">
-                {copied}
-              </button>
+            <CopyToClipboard text={code} onCopy={() => setCopied(doneIcon)}>
+              <button className="docs-codeblock-btn">{copied}</button>
             </CopyToClipboard>
             <pre className={`${className}`} style={{ ...style }}>
               {tokens.map((line, i) => (
