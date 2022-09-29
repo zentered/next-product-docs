@@ -14,7 +14,8 @@ This component helps you to render your product documentation (`/docs`) on your
 product website. Check out these docs to see a full impression what this
 component does.
 
-- [Cert Manager Docs][https://cert-manager.io/docs/]
+- [Opstrace Docs](https://opstrace.com/docs)
+- [Cert Manager Docs](https://cert-manager.io/docs/)
 
 Typically the website and product (docs) are in separate repositories. This
 library offers three key functions:
