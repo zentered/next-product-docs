@@ -109,7 +109,7 @@ where documentation content is stored at
 ### Additional options
 
 ```jsx
-skipPathPrefix: false
+  skipPathPrefix: false,
 ```
 
 Can be used if the docs are not located in the root of the repository.
@@ -152,7 +152,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(ctx) {
-  const props = await pageProps(ctx, docOptions)
+  const props = await pageProps(ctx, docsOptions)
   return { props }
 }
 ```

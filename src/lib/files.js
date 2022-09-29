@@ -49,7 +49,7 @@ async function getRawFileFromFS(path, options) {
 
 export function getRawFile(path, options) {
   if (options.debug) {
-    console.log(path)
+    console.log('path:', path)
   }
   const { org, repo, tag } = options
   if (!org || !repo || !tag) {

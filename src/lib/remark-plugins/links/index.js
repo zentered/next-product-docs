@@ -1,10 +1,6 @@
 import { visit } from 'unist-util-visit'
 
 export default function relativeLinks(options) {
-  if (!options || !options.prefix) {
-    throw Error('Missing required "prefix" option')
-  }
-
   let pathParts = []
   let extensions = ['.mdx', '.md']
   const slug = options.slug

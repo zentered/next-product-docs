@@ -167,9 +167,3 @@ test.each(cases)(
     expect(tree.children[0].url).toBe(expected)
   }
 )
-
-test('fails with missing prefix', () => {
-  expect(() => {
-    relativeLinks({})
-  }).toThrow()
-})

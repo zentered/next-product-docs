@@ -173,7 +173,7 @@ export async function pageProps(context, args) {
 }
 
 export async function staticPaths(args) {
-  const options = { ...args, ...defaults }
+  const options = { ...defaults, ...args }
   const { docsFolder, skipPathPrefix } = options
 
   const manifest = await fetchDocsManifest(docsFolder, options)
