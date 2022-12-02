@@ -41,6 +41,14 @@ export function findRouteByPath(path, routes, options) {
         path
     ) {
       return route
+    } else if (
+      route.path &&
+      `/${options.docsFolder}${removeFromLast(route.path, extension).replace(
+        `/${DOCS_FALLBACK}`,
+        ''
+      )}` === path
+    ) {
+      return route
     }
 
     const childPath =

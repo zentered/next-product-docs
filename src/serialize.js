@@ -51,7 +51,6 @@ export async function pageProps(context, args) {
       throw error
     }
   )
-
   const { slug } = getSlug(params)
   const pathPrefix = docsFolder && !skipPathPrefix ? `/${docsFolder}` : ''
   const route =
