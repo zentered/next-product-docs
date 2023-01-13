@@ -17,7 +17,7 @@ jobs:
           version: 'latest'
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: 'pnpm'
       - name: Install Dependencies
         run: pnpm install
@@ -25,5 +25,5 @@ jobs:
       - name: Lint Code Base
         run: pnpm lint
 
-      # - name: Test
-      #   run: pnpm test
+      - name: Test
+        run: pnpm test
