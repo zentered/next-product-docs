@@ -25,37 +25,46 @@ export async function fetchDocsManifest(docsFolder, options) {
   return JSON.parse(res)
 }
 
+/**
+ * Recursively runs through the manifest and returns a route if a path matches the requested path
+ * @param {*} path
+ * @param {*} routes
+ * @param {*} options
+ * @returns {} route
+ */
 export function findRouteByPath(path, routes, options) {
   const extension = options.useMDX ? '.mdx' : '.md'
   for (const route of routes) {
-    if (
-      route.path &&
-      `/${options.docsFolder}${removeFromLast(route.path, extension)}` === path
-    ) {
-      return route
-    } else if (route.path && removeFromLast(route.path, extension) === path) {
-      return route
-    } else if (
-      route.path &&
-      removeFromLast(route.path, extension).replace(`/${DOCS_FALLBACK}`, '') ===
-        path
-    ) {
-      return route
-    } else if (
-      route.path &&
-      `/${options.docsFolder}${removeFromLast(route.path, extension).replace(
-        `/${DOCS_FALLBACK}`,
-        ''
-      )}` === path
-    ) {
-      return route
+    if (route.path) {
+      let matchPath = path.replace(extension, '')
+      if (matchPath.endsWith('/')) {
+        matchPath = matchPath.slice(0, -1)
+      }
+      const matches = [
+        `/${options.docsFolder}${removeFromLast(route.path, extension)}`,
+        `/${options.docsFolder}${removeFromLast(route.path, extension).replace(
+          `/${DOCS_FALLBACK}`,
+          ''
+        )}`,
+        removeFromLast(route.path, extension),
+        removeFromLast(route.path, extension).replace(`/${DOCS_FALLBACK}`, '')
+      ]
+
+      if (options.debug === true) {
+        console.log(matches)
+        console.log(matchPath)
+      }
+
+      if (matches.includes(matchPath)) {
+        return route
+      }
     }
 
     const childPath =
       route.routes && findRouteByPath(path, route.routes, options)
     if (childPath) {
       // check if the routes in the manifest start with the docsFolder
-      if (!childPath.path.startsWith(options.docsFolder)) {
+      if (!childPath.path.startsWith(`/${options.docsFolder}`)) {
         if (options.skipPathPrefix) {
           childPath.path = `${childPath.path}`
         } else {
@@ -90,6 +99,9 @@ export function replaceDefaultPath(routes, options) {
   for (const route of routes) {
     if (route.path) {
       if (options.docsFolder && !route.path.startsWith(options.docsFolder)) {
+        if (route.path.startsWith('/')) {
+          route.path = route.path.slice(1)
+        }
         route.path = `/${options.docsFolder}/${route.path}`
       }
       route.path = route.path.split(extension)[0]
