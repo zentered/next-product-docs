@@ -51,7 +51,9 @@ export async function pageProps(context, args) {
       throw error
     }
   )
+
   const { slug } = getSlug(params)
+  console.log(slug)
   const pathPrefix = docsFolder && !skipPathPrefix ? `/${docsFolder}` : ''
   const route =
     manifest && findRouteByPath(pathPrefix + slug, manifest.routes, options)
