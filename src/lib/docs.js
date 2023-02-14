@@ -112,6 +112,15 @@ export function replaceDefaultPath(routes, options) {
           route.path = route.path.slice(0, -1)
         }
       }
+      /**
+       * There's a strange situation where the docsFolder is duplicated when the current active route.
+       * We'll check if the docsFolder is duplicated and remove the first instance.
+       */
+      const matcher = new RegExp(`${options.docsFolder}`, 'g')
+      if (options.docsFolder && (route.path.match(matcher) || []).length > 1) {
+        const firstMatch = new RegExp(`/${options.docsFolder}`)
+        route.path = route.path.replace(firstMatch, '')
+      }
     }
     if (route.routes) {
       replaceDefaultPath(route.routes, options)
