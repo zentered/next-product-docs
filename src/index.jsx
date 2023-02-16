@@ -29,3 +29,8 @@ export function Documentation({ source, theme, additionalComponents = {} }) {
 
   return <MDXRemote {...source} components={components} theme={theme} />
 }
+
+// separate export that does not include predefined components
+export function DocumentationPlain({ source, additionalComponents = {} }) {
+  return <MDXRemote {...source} components={additionalComponents} />
+}
