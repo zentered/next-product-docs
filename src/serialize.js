@@ -8,7 +8,8 @@ import cloneDeep from 'lodash/cloneDeep'
 
 import { codeImport as remarkCodeImport } from './lib/remark-plugins/import'
 import remarkInlineLinks from 'remark-inline-links'
-import remarkHeadingId from './lib/remark-plugins/heading-ids'
+import { remarkHeadingId } from 'remark-custom-heading-id'
+
 // TODO: plugins require some refactoring, see https://github.com/storybookjs/storybook/issues/9602 for inspiration/guidance
 import remarkTabs from './lib/remark-plugins/tabs'
 // import remarkState from './lib/remark-plugins/state'
@@ -122,8 +123,8 @@ export async function pageProps(context, args) {
       ],
       remarkPlugins: [
         remarkHeadingId,
-        // remarkSections,
         remarkTabs,
+        // remarkSections,
         // remarkState,
         remarkGfm,
         [
