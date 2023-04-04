@@ -74,7 +74,9 @@ export default function relativeLinks(options) {
       node.url = `/${path}${node.url}`
 
       if (options.trailingSlash && node.url.includes('#')) {
-        node.url = node.url.replace('#', '/#')
+        if (!node.url.includes('/#')) {
+          node.url = node.url.replace('#', '/#')
+        }
       } else if (options.trailingSlash === true && !node.url.endsWith('/')) {
         node.url += '/'
       }

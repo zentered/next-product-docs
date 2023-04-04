@@ -75,6 +75,13 @@ const cases = [
       '/docs/configuration/acme/dns01/azuredns/#managed-identity-using-aad-pod-identities'
   },
   {
+    url: '#redhat',
+    prefix: 'docs',
+    slug: ['docs', 'step-cli', 'installation'],
+    expected: '/docs/step-cli/installation/#redhat',
+    options: { skipPathPrefix: true, useMDX: true, trailingSlash: true }
+  },
+  {
     url: '#challenge-scheduling',
     prefix: 'docs',
     slug: ['concepts', 'acme-orders-challenges'],
