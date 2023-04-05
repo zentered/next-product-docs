@@ -9,6 +9,7 @@ export default function relativeLinks(options) {
     extensions = options.extensions
   }
 
+  // Note: this has gotten incredibly complex over time and could use some refactoring
   function visitor(node) {
     let nodePrefix = options.prefix
     if (node && node.url && !node.url.startsWith('http')) {
@@ -40,8 +41,17 @@ export default function relativeLinks(options) {
           nodePrefix = ''
           pathParts = []
         } else {
-          const removeLast = slug.length - depth - 1
-          pathParts = slug.slice(0, removeLast)
+          // Special case for links that do not have a path prefix and end with a slash to direct into a README
+          if (
+            node.url.match(/^[a-zA-Z]/) &&
+            node.url.endsWith('/') &&
+            options.trailingSlash === true
+          ) {
+            pathParts = slug
+          } else {
+            const removeLast = slug.length - depth - 1
+            pathParts = slug.slice(0, removeLast)
+          }
         }
       }
 
@@ -89,6 +99,10 @@ export default function relativeLinks(options) {
 
       if (node.url.includes('README')) {
         node.url = node.url.replace('README', '')
+      }
+
+      if (node.url.endsWith('//')) {
+        node.url = node.url.slice(0, -1)
       }
     }
   }

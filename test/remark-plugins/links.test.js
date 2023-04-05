@@ -150,6 +150,13 @@ const cases = [
     slug: ['usage', 'gateway'],
     options: { trailingSlash: true },
     expected: '/docs/usage/ingress/#supported-annotation'
+  },
+  {
+    url: 'base64/',
+    prefix: 'docs',
+    slug: ['step-cli', 'reference'],
+    options: { trailingSlash: true, useMDX: true },
+    expected: '/docs/step-cli/reference/base64/'
   }
 ]
 
