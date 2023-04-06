@@ -118,6 +118,12 @@ Can be used if the docs are not located in the root of the repository.
   useMDX: true,
 ```
 
+Limit the level of headings for the Table of Contents
+
+```jsx
+  tocMaxDepth: 3,
+```
+
 Switch from Markdown to MDX.
 
 ```jsx

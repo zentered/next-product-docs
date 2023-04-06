@@ -37,13 +37,15 @@ const defaults = {
   repo: null,
   tag: null,
   assetsDestination: null,
-  debug: process.env.DEBUG === true
+  debug: process.env.DEBUG === true,
+  tocMaxDepth: 10
 }
 
 export async function pageProps(context, args) {
   const options = { ...defaults, ...args }
   const params = context.params
-  const { docsFolder, trailingSlash, skipPathPrefix, useMDX } = options
+  const { docsFolder, trailingSlash, skipPathPrefix, useMDX, tocMaxDepth } =
+    options
 
   const slugger = new GithubSlugger()
   const manifest = await fetchDocsManifest(docsFolder, options).catch(
@@ -154,6 +156,7 @@ export async function pageProps(context, args) {
   const markdownTokens = marked.lexer(content)
   const headings = markdownTokens
     .filter((t) => t.type === 'heading')
+    .filter((t) => t.depth <= tocMaxDepth)
     .map((heading) => {
       heading.slug = slugger.slug(heading.text)
       return heading
