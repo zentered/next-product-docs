@@ -158,7 +158,13 @@ export async function pageProps(context, args) {
     .filter((t) => t.type === 'heading')
     .filter((t) => t.depth <= tocMaxDepth)
     .map((heading) => {
-      heading.slug = slugger.slug(heading.text)
+      const headerId = new RegExp(/\{#(.*)\}/)
+      if (headerId.test(heading.text)) {
+        heading.slug = slugger.slug(heading.text.match(headerId)[1])
+        heading.text = heading.text.replace(/ \{#.*\}/, '')
+      } else {
+        heading.slug = slugger.slug(heading.text)
+      }
       return heading
     })
 
