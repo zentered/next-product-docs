@@ -3,9 +3,9 @@ import relativeLinks from '../../src/lib/remark-plugins/links/index'
 
 const cases = [
   {
+    rootPath: '/docs/guides/README.md',
     url: './test-remote.txt',
     prefix: 'docs',
-    slug: ['guides'],
     expected: '/docs/guides/test-remote/',
     options: {
       trailingSlash: true,
@@ -14,158 +14,167 @@ const cases = [
   },
   {
     url: './test-remote',
+    rootPath: '/docs/guides/contributor/workflows.md',
     prefix: 'docs',
-    slug: ['guides', 'contributor', 'workflows'],
     expected: '/docs/guides/contributor/test-remote'
   },
   {
     url: 'mailto:hello@wor.ld',
+    rootPath: '/docs/guides/README.md',
     prefix: 'docs',
-    slug: ['guides', 'contributor', 'workflows'],
     expected: 'mailto:hello@wor.ld'
   },
   {
     url: '../usage/kube-csr.md',
+    rootPath: '/docs/faq/README.md',
     prefix: 'docs',
-    slug: ['faq', 'README'],
     expected: '/docs/usage/kube-csr'
   },
   {
     url: './kubectl.md',
+    rootPath: '/docs/installation/README.md',
     prefix: 'docs',
-    slug: ['installation'],
     expected: '/docs/installation/kubectl'
   },
   {
     url: './references/concepts.md',
+    rootPath: '/docs/README.md',
     prefix: 'docs',
-    slug: [],
     expected: '/docs/references/concepts'
   },
   {
     url: '../../references/cli.md',
+    rootPath: '/docs/guides/administrator/gcp-setup.md',
     prefix: 'docs',
-    slug: ['guides', 'administrator', 'gcp-setup'],
     expected: '/docs/references/cli'
   },
   {
     url: './writing-docs.md#get-on-your-marks',
+    rootPath: '/docs/guides/contributor/workflows.md',
     prefix: 'docs',
-    slug: ['guides', 'contributor', 'workflows'],
     expected: '/docs/guides/contributor/writing-docs#get-on-your-marks'
   },
   {
     url: '../guides/user/sending-metrics-with-prometheus.md#remote_write-configuration-block-the-basics',
+    rootPath: '/docs/references/faq.md',
     prefix: 'docs',
-    slug: ['references', 'faq'],
     expected:
       '/docs/guides/user/sending-metrics-with-prometheus#remote_write-configuration-block-the-basics'
   },
   {
     url: '../faq/README.md',
+    rootPath: '/docs/installation/verify.md',
     prefix: 'docs',
-    slug: ['installation', 'verify'],
-    expected: '/docs/faq/'
+    expected: '/docs/faq'
   },
   {
     url: '#managed-identity-using-aad-pod-identities',
+    rootPath: '/docs/configuration/acme/dns01/azuredns.md',
     prefix: 'docs',
-    slug: ['docs', 'configuration', 'acme', 'dns01', 'azuredns'],
     expected:
       '/docs/configuration/acme/dns01/azuredns/#managed-identity-using-aad-pod-identities'
   },
   {
     url: '#redhat',
+    rootPath: '/docs/step-cli/installation.md',
     prefix: 'docs',
-    slug: ['docs', 'step-cli', 'installation'],
     expected: '/docs/step-cli/installation/#redhat',
     options: { skipPathPrefix: true, useMDX: true, trailingSlash: true }
   },
   {
     url: '#challenge-scheduling',
+    rootPath: '/docs/concepts/acme-orders-challenges.md',
     prefix: 'docs',
-    slug: ['concepts', 'acme-orders-challenges'],
     expected: '/docs/concepts/acme-orders-challenges/#challenge-scheduling'
   },
   {
-    url: '/release-notes-1.7.md',
-    prefix: 'docs',
-    slug: ['release-notes', 'README'],
-    expected: '/docs/release-notes/release-notes-1.7'
-  },
-  {
     url: './acme-dns.md',
+    rootPath: '/docs/configuration/acme/dns01/README.md',
     prefix: 'docs',
-    slug: ['configuration', 'acme', 'dns01', 'README'],
     expected: '/docs/configuration/acme/dns01/acme-dns'
   },
   {
     url: '#reinstalling-cert-manager',
+    rootPath: '/docs/installation/upgrading.md',
     prefix: 'docs',
-    slug: ['installation', 'upgrading'],
     expected: '/docs/installation/upgrading/#reinstalling-cert-manager'
   },
   {
     url: '../faq/README.md#kubernetes-has-a-builtin-certificatesigningrequest-api-why-not-use-that',
+    rootPath: '/docs/contributing/policy.md',
     prefix: 'docs',
-    slug: ['contributing', 'policy'],
+    options: { trailingSlash: true },
     expected:
       '/docs/faq/#kubernetes-has-a-builtin-certificatesigningrequest-api-why-not-use-that'
   },
   {
     url: '../../docs/installation/supported-releases.md',
+    rootPath: '/docs/installation/supported-releases.md',
     prefix: 'docs',
-    slug: ['installation', 'supported-releases'],
     expected: '/docs/installation/supported-releases'
   },
   {
     url: '../../v1.8-docs/cli/controller.md',
+    rootPath: '/docs/release-notes/release-notes-1.8.md',
     prefix: 'docs',
-    slug: ['release-notes', 'release-notes-1.8'],
     expected: '/v1.8-docs/cli/controller'
   },
   {
     url: '../../docs/installation/supported-releases.md',
+    rootPath: '/v1.8-docs/installation/helm.md',
     prefix: 'v1.8-docs',
-    slug: ['v1.8-docs', 'installation', 'helm'],
     expected: '/docs/installation/supported-releases/',
     options: { trailingSlash: true }
   },
   {
     url: './compatibility.md',
+    rootPath: '/v1.8-docs/installation/helm.md',
     prefix: 'v1.8-docs',
-    slug: ['installation', 'helm'],
     expected: '/v1.8-docs/installation/compatibility'
   },
   {
     url: 'ingress.md#supported-annotation',
+    rootPath: '/docs/usage/gateway.md',
     prefix: 'docs',
-    slug: ['usage', 'gateway'],
     options: { trailingSlash: true },
     expected: '/docs/usage/ingress/#supported-annotation'
   },
   {
     url: './ingress.md#supported-annotation',
+    rootPath: '/docs/usage/gateway.md',
     prefix: 'docs',
-    slug: ['usage', 'gateway'],
     options: { trailingSlash: true },
     expected: '/docs/usage/ingress/#supported-annotation'
   },
   {
     url: 'base64/',
+    rootPath: '/docs/step-cli/reference/README.md',
     prefix: 'docs',
-    slug: ['step-cli', 'reference'],
     options: { trailingSlash: true, useMDX: true },
     expected: '/docs/step-cli/reference/base64/'
+  },
+  {
+    url: '../certificate-manager/',
+    rootPath: '/docs/step-cli/README.mdx',
+    prefix: 'docs',
+    options: { trailingSlash: true, useMDX: true },
+    expected: '/docs/certificate-manager/'
+  },
+  {
+    url: '../certificate-manager/',
+    rootPath: '/step-cli/README.mdx',
+    prefix: '',
+    options: { trailingSlash: true, useMDX: true },
+    expected: '/certificate-manager/'
   }
 ]
 
 test.each(cases)(
   'transform $url',
-  ({ url, prefix, slug, expected, options = {} }) => {
+  ({ url, prefix, rootPath, expected, options = {} }) => {
     const transform = relativeLinks({
       prefix: prefix,
-      slug: slug,
+      rootPath: rootPath,
       ...options
     })
     const tree = {
