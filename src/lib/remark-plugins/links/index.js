@@ -1,108 +1,79 @@
 import { visit } from 'unist-util-visit'
+import { resolve, sep } from 'node:path'
 
 export default function relativeLinks(options) {
-  let pathParts = []
   let extensions = ['.mdx', '.md']
-  const slug = options.slug
-
+  let rootPath = options.rootPath
+  const prefix = options.prefix
   if (options.extensions) {
     extensions = options.extensions
   }
 
-  // Note: this has gotten incredibly complex over time and could use some refactoring
+  /**
+   * This function takes an internal url and converts it into a web url.
+   * It handles relative and absolute paths.
+   *
+   * @param {*} node
+   * @returns node
+   */
   function visitor(node) {
-    let nodePrefix = options.prefix
-    if (node && node.url && !node.url.startsWith('http')) {
-      if (process.env.DEBUG === 'true') {
-        // helps to identify "special cases" and add those to the tests
-        console.log(node.url, options)
+    if (
+      node &&
+      node.url &&
+      !node.url.startsWith('http') &&
+      !node.url.startsWith('mailto:')
+    ) {
+      // keep a copy of the original node url for comparison
+      const originalUrl = node.url
+
+      if (options.debug) {
+        console.log(rootPath, node.url, options)
       }
 
-      // ignore mailto: links
-      if (node.url.startsWith('mailto:')) {
-        return
+      // remove the filename from the rootPath if it's an anchor link
+      if (!node.url.startsWith('#')) {
+        rootPath = rootPath.split('/').slice(0, -1).join('/')
       }
 
-      // handle relative paths
-      if (node.url.startsWith('#')) {
-        if (slug[0] === nodePrefix) {
-          pathParts = slug.slice(1)
-        } else {
-          pathParts = slug
-        }
-      } else if (slug && Array.isArray(slug)) {
-        if (slug[0] === nodePrefix) {
-          slug.shift()
-        }
-        const depth = (node.url.match(/\.\.\//g) || []).length
-        if (slug.length <= 1) {
-          pathParts = slug
-        } else if (depth >= slug.length) {
-          nodePrefix = ''
-          pathParts = []
-        } else {
-          // Special case for links that do not have a path prefix and end with a slash to direct into a README
-          if (
-            node.url.match(/^[a-zA-Z]/) &&
-            node.url.endsWith('/') &&
-            options.trailingSlash === true
-          ) {
-            pathParts = slug
-          } else {
-            const removeLast = slug.length - depth - 1
-            pathParts = slug.slice(0, removeLast)
-          }
-        }
+      // drop all extensions from root and node url
+      for (const ext of extensions) {
+        rootPath = rootPath.replace(ext, '')
+        node.url = node.url.replace(ext, '')
       }
 
-      if (node.url.startsWith('/')) {
-        node.url = node.url.replace('/', '')
+      // drop README from root and node url
+      rootPath = rootPath.replace('/README', '')
+      node.url = node.url.replace('/README', '')
+
+      // check if the depth of the node.url goes beyond the rootPath
+      const rootPathParts = rootPath.split(sep).slice(1)
+      const depth = (originalUrl.match(/\.\.\//g) || []).length
+      const skipPrefix = depth > 0 && rootPathParts.length === depth
+
+      const relative = resolve(rootPath, node.url)
+      if (
+        !skipPrefix &&
+        !relative.startsWith(`/${prefix}`) &&
+        !originalUrl.startsWith('/')
+      ) {
+        node.url = `/${prefix}${relative}`
+      } else {
+        node.url = relative
       }
 
-      if (node.url.startsWith('./')) {
-        node.url = node.url.replace('./', '')
+      if (options.debug) {
+        console.log(`rootPath: ${rootPath}`)
+        console.log(`nodeUrl: ${originalUrl}`)
+        console.log(`calculated URL: ${relative}`)
       }
 
-      if (node.url.startsWith('../')) {
-        node.url = node.url.replace(/\.\.\//g, '')
-      }
-
-      let path = ''
-      if (pathParts) {
-        if (pathParts.length >= 1) {
-          if (pathParts[0] !== nodePrefix) {
-            path = nodePrefix + '/' + pathParts.join('/')
-          }
-          path += '/'
-        } else {
-          if (nodePrefix) {
-            path = nodePrefix + '/'
-          }
-        }
-      }
-
-      node.url = `/${path}${node.url}`
-
-      if (options.trailingSlash && node.url.includes('#')) {
+      // add trailing slash and handle anchor link if needed
+      if (options.trailingSlash && originalUrl.includes('#')) {
         if (!node.url.includes('/#')) {
           node.url = node.url.replace('#', '/#')
         }
       } else if (options.trailingSlash === true && !node.url.endsWith('/')) {
         node.url += '/'
-      }
-
-      for (const ext of extensions) {
-        if (node.url.includes(ext)) {
-          node.url = node.url.replace(ext, '')
-        }
-      }
-
-      if (node.url.includes('README')) {
-        node.url = node.url.replace('README', '')
-      }
-
-      if (node.url.endsWith('//')) {
-        node.url = node.url.slice(0, -1)
       }
     }
   }

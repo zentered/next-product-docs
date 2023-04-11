@@ -50,11 +50,6 @@ export function findRouteByPath(path, routes, options) {
         removeFromLast(route.path, extension).replace(`/${DOCS_FALLBACK}`, '')
       ]
 
-      if (options.debug === true) {
-        console.log(matches)
-        console.log(matchPath)
-      }
-
       if (matches.includes(matchPath)) {
         return route
       }

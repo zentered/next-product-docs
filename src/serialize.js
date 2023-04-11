@@ -63,10 +63,7 @@ export async function pageProps(context, args) {
     return {
       notFound: true
     }
-  const inlineLinkSlugHelper =
-    params.slug?.length > 0 && route.path.endsWith('README.md')
-      ? params.slug?.concat(['README'])
-      : params.slug
+
   const manifestRoutes = cloneDeep(manifest.routes)
   replaceDefaultPath(manifestRoutes, options)
 
@@ -143,9 +140,10 @@ export async function pageProps(context, args) {
           remarkInternalLinks,
           {
             prefix: docsFolder,
-            slug: inlineLinkSlugHelper,
             extensions: ['.mdx', '.md'],
-            trailingSlash: trailingSlash
+            trailingSlash: trailingSlash,
+            rootPath: route.path,
+            debug: options.debug
           }
         ]
       ]
