@@ -3,7 +3,7 @@ import { resolve, sep } from 'node:path'
 
 export default function relativeLinks(options) {
   let extensions = ['.mdx', '.md']
-  let rootPath = options.rootPath
+  const moduleRootPath = options.rootPath
   const prefix = options.prefix
   if (options.extensions) {
     extensions = options.extensions
@@ -25,6 +25,7 @@ export default function relativeLinks(options) {
     ) {
       // keep a copy of the original node url for comparison
       const originalUrl = node.url
+      let rootPath = moduleRootPath
 
       if (options.debug) {
         console.log(rootPath, node.url, options)
