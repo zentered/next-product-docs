@@ -42,6 +42,11 @@ export default function relativeLinks(options) {
         node.url = node.url.replace(ext, '')
       }
 
+      // add prefix to rootPath if it has been passed
+      if (prefix && !rootPath.startsWith(`/${prefix}`)) {
+        rootPath = `/${prefix}${rootPath}`
+      }
+
       // drop README from root and node url
       rootPath = rootPath.replace('/README', '')
       node.url = node.url.replace('/README', '')
@@ -50,7 +55,6 @@ export default function relativeLinks(options) {
       const rootPathParts = rootPath.split(sep).slice(1)
       const depth = (originalUrl.match(/\.\.\//g) || []).length
       const skipPrefix = depth > 0 && rootPathParts.length === depth
-
       const relative = resolve(rootPath, node.url)
       if (
         !skipPrefix &&

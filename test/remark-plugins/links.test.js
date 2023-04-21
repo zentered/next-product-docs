@@ -166,6 +166,20 @@ const cases = [
     prefix: '',
     options: { trailingSlash: true, useMDX: true },
     expected: '/certificate-manager/'
+  },
+  {
+    url: './certificate-authority-server-production.mdx',
+    rootPath: '/step-ca/basic-certificate-authority-operations.mdx',
+    prefix: 'docs',
+    options: { trailingSlash: true, useMDX: true },
+    expected: '/docs/step-ca/certificate-authority-server-production/'
+  },
+  {
+    url: '../step-cli/reference/ssh',
+    rootPath: '/step-ca/basic-certificate-authority-operations.mdx',
+    prefix: 'docs',
+    options: { trailingSlash: true, useMDX: true },
+    expected: '/docs/step-cli/reference/ssh/'
   }
 ]
 
