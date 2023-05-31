@@ -40,7 +40,7 @@
     "postpublish": "pinst --enable",
     "style": "prettier --write \"./**/*.{js,jsx,json}\"",
     "test": "vitest run",
-    "preversion": "pnpm build",
+    "preversion": "npm run build",
     "watch": "watch 'npm run build' ./src"
   },
   "commitlint": {
