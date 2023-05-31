@@ -1,6 +1,5 @@
 import React from 'react'
-import Highlight, { defaultProps } from 'prism-react-renderer'
-import github from '../lib/github-prism-theme.js'
+import { Highlight, themes } from 'prism-react-renderer'
 import pkg from 'react-copy-to-clipboard'
 const { CopyToClipboard } = pkg
 import { useState } from 'react'
@@ -32,20 +31,15 @@ const doneIcon = (
   </svg>
 )
 
-export default function CodeBlock({ children, theme = github }) {
+export default function CodeBlock({ children }) {
   const className = children.props.className || ''
   const [copied, setCopied] = useState(copyIcon)
   const language = className.replace(/language-/, '')
-  const code = children.props.children.trim()
+  const code = children.props.children
 
   return (
     <div className="relative">
-      <Highlight
-        {...defaultProps}
-        theme={theme}
-        code={code}
-        language={language}
-      >
+      <Highlight theme={themes.github} code={code} language={language}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <>
             <CopyToClipboard text={code} onCopy={() => setCopied(doneIcon)}>
