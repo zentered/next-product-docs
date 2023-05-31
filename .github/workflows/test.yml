@@ -12,18 +12,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 'latest'
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'pnpm'
+          cache: 'npm'
       - name: Install Dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Lint Code Base
-        run: pnpm lint
+        run: npm run lint
 
       - name: Test
-        run: pnpm test
+        run: npm test

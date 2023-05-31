@@ -169,16 +169,16 @@ export async function getStaticProps(ctx) {
 
 ```bash
     # build dist folder
-    pnpm build
+    npm build
 
     # create system-wide link to project folder
-    pnpm link .
+    npm link
 
     # in the website/next project folder
-    pnpm link @zentered/next-product-docs ../next-product-docs
+    npm link @zentered/next-product-docs ../next-product-docs
 
     # for continous monitoring in next-product-docs
-    pnpm watch
+    npm run watch
 ```
 
 ## Additional Components
