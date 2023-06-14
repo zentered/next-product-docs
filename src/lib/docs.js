@@ -81,7 +81,8 @@ export function getPaths(nextRoutes, options, carry = []) {
         )
       }
       carry.push(removeFromLast(path, extension))
-    } else if (routes) {
+    }
+    if (routes) {
       getPaths(routes, options, carry)
     }
   })
